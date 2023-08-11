@@ -8,6 +8,7 @@ from googleapiclient.http import MediaFileUpload
 from decouple import config
 from oauth2client import file, client, tools
 import requests
+import tarfile
 
 
 db_params = {
@@ -69,7 +70,7 @@ def upload_file_to_google_drive(file_path):
         drive_service = build("drive", "v3", credentials=creds)
 
         file_metadata = {"name": file_path, "parents": [config("GDRIVEFOLDERID")]}
-        media = MediaFileUpload(file_path, mimetype="application/zip")
+        media = MediaFileUpload(file_path, mimetype="application/x-tar")
         file2 = (
             drive_service.files()
             .create(body=file_metadata, media_body=media, fields="id")
@@ -116,11 +117,13 @@ def main():
     now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     os.chdir("../../")
 
-    file_name = "{}_backup".format(now)
+    file_name = "{}_backup.tar.gz".format(now)
     shutil.copytree(static_folder, backup_folder + "/" + static_folder.split("/")[-1])
-    shutil.make_archive(file_name, "zip", backup_folder)
-    upload_file_to_google_drive("{}.zip".format(file_name))
-    delete_files_with_extension(".", ".zip")
+    with tarfile.open(file_name, "w:gz") as tar:
+        tar.add(backup_folder, arcname="")
+    print("Backup file is created: {}".format(file_name))
+    upload_file_to_google_drive(file_name)
+    delete_files_with_extension(".", ".gz")
     try:
         shutil.rmtree(backup_folder)
     except FileNotFoundError:
