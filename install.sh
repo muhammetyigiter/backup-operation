@@ -11,10 +11,11 @@ fi
 echo "Paketler yükleniyor..."
 pip3 install -r ./requirements.txt
 
-# Cron job oluşturma
-echo "Cron job oluşturuluyor..."
-cron_command="/usr/bin/python3 ./backup.py"
+crontab -r
+
+script_dir=$(pwd)
+cron_command="/usr/bin/python3 $script_dir/backup.py"
 cron_job="0 0 * * * $cron_command"
 (crontab -l ; echo "$cron_job") | crontab -
 
-echo "İşlem tamamlandı."
+echo "Cron job oluşturuldu."
