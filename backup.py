@@ -40,12 +40,20 @@ def backup_postgresql_databases(backup_folder):
     databases = [row[0] for row in cursor.fetchall()]
 
     for database in databases:
-        backup_file = os.path.join(backup_folder, f"{database}.backup")
-        os.system(
-            "docker exec -it {} pg_dump -U {} -d {} > {}_backup.sql".format(
-                config("DBDOCKERNAME"), config("DBUSER"), database, database
+        try:
+            backup_file = os.path.join(backup_folder, f"{database}.backup")
+            os.system(
+                "docker exec -it {} pg_dump -U {} -d {} > {}_backup.sql".format(
+                    config("DBDOCKERNAME"), config("DBUSER"), database, database
+                )
             )
-        )
+        except Exception as e:
+            sendSlack(
+                "#backup-logs",
+                "Backup - ERROR",
+                "Veritabanı yedeklenirken hata oluştu. Hata: {}".format(e),
+                ":red_circle:",
+            )
 
     cursor.close()
     conn.close()
