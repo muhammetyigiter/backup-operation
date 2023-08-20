@@ -19,7 +19,7 @@ db_params = {
     "port": config("DBPORT"),
 }
 
-CREDENTIALS_FILE = "../credentials.json"
+CREDENTIALS_FILE = config("CREDENTIALS_FILE")
 
 
 def sendSlack(channel, senderName, message, icon_emoji=":large_green_circle:"):
@@ -56,7 +56,7 @@ def backup_postgresql_databases(backup_folder):
 def upload_file_to_google_drive(file_path):
     try:
         SCOPES = "https://www.googleapis.com/auth/drive"
-        store = file.Storage("token.json")
+        store = file.Storage(config("TOKEN_FILE"))
         creds = store.get()
         if not creds or creds.invalid:
             flow = client.flow_from_clientsecrets(CREDENTIALS_FILE, SCOPES)
