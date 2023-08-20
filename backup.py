@@ -54,6 +54,7 @@ def backup_postgresql_databases(backup_folder):
 
 
 def upload_file_to_google_drive(file_path):
+    today = datetime.now().strftime("%Y-%m-%d")
     try:
         SCOPES = "https://www.googleapis.com/auth/drive"
         store = file.Storage(config("TOKEN_FILE"))
@@ -78,14 +79,14 @@ def upload_file_to_google_drive(file_path):
         )
         sendSlack(
             "#backup-logs",
-            "Backup - OK",
-            "Dosya yüklendi. Dosya ID'si: {}".format(file2.get("id")),
+            "Backup - {} - OK".format(today),
+            "Backup file uploaded. File ID: {}".format(file2.get("id")),
             ":white_check_mark:",
         )
     except Exception as e:
         sendSlack(
             "#backup-logs",
-            "Backup - ERROR",
+            "Backup - {} - ERROR".format(today),
             "Dosya yüklenirken hata oluştu. Hata: {}".format(e),
             ":red_circle:",
         )
@@ -100,12 +101,6 @@ def delete_files_with_extension(directory, extension):
 
 
 def main():
-    sendSlack(
-        "#backup-logs",
-        "Backup Job - Started",
-        "Yedekleme Scripti Başladı",
-        ":white_check_mark:",
-    )
     static_folder = config("STATIC_FOLDER")
     backup_folder = "backup_folder"
     db_backup_folder = "backup_folder/databases"
@@ -121,7 +116,6 @@ def main():
     shutil.copytree(static_folder, backup_folder + "/" + static_folder.split("/")[-1])
     with tarfile.open(file_name, "w:gz") as tar:
         tar.add(backup_folder, arcname="")
-    print("Backup file is created: {}".format(file_name))
     upload_file_to_google_drive(file_name)
     delete_files_with_extension(".", ".gz")
     try:
