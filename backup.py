@@ -44,7 +44,7 @@ def backup_postgresql_databases(backup_folder):
     for database in databases:
         backup_file = os.path.join(backup_folder, f"{database}.backup")
         os.system(
-            "docker exec -it {} pg_dump -U {} -d {} > {}_backup.sql".format(
+            "docker exec -t {} pg_dump -U {} -d {} > {}_backup.sql".format(
                 config("DBDOCKERNAME"), config("DBUSER"), database, database
             )
         )
