@@ -15,7 +15,7 @@ crontab -r
 
 script_dir=$(pwd)
 cron_command="/usr/bin/python3 $script_dir/backup.py"
-cron_job="0 */2 * * * $cron_command"
+cron_job="0 */12 * * * $cron_command"
 (crontab -l ; echo "$cron_job") | crontab -
 
 echo "Cron job oluşturuldu."
