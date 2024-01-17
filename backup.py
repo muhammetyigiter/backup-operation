@@ -104,6 +104,10 @@ def main():
     static_folder = config("STATIC_FOLDER")
     backup_folder = "backup_folder"
     db_backup_folder = "backup_folder/databases"
+    try:
+        os.remove(backup_folder)
+    except Exception as e:
+        pass
     os.makedirs(backup_folder, exist_ok=True)
     os.makedirs(db_backup_folder, exist_ok=True)
     os.chdir(db_backup_folder)
