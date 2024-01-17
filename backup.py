@@ -107,7 +107,7 @@ def main():
     try:
         shutil.rmtree(backup_folder)
     except FileNotFoundError:
-        pass
+        print(backup_folder, "Backup folder not found.")
     os.makedirs(backup_folder, exist_ok=True)
     os.makedirs(db_backup_folder, exist_ok=True)
     os.chdir(db_backup_folder)
@@ -120,7 +120,10 @@ def main():
     try:
         shutil.rmtree(backup_folder + "/" + static_folder.split("/")[-1])
     except FileNotFoundError:
-        pass
+        print(
+            backup_folder + "/" + static_folder.split("/")[-1],
+            "Backup folder not found.",
+        )
     shutil.copytree(static_folder, backup_folder + "/" + static_folder.split("/")[-1])
     with tarfile.open(file_name, "w:gz") as tar:
         tar.add(backup_folder, arcname="")
