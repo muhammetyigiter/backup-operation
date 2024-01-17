@@ -105,7 +105,7 @@ def main():
     backup_folder = "backup_folder"
     db_backup_folder = "backup_folder/databases"
     try:
-        shutil.rmtree(backup_folder)  # Hedef dizini sil
+        shutil.rmtree(backup_folder)
     except FileNotFoundError:
         pass
     os.makedirs(backup_folder, exist_ok=True)
@@ -117,6 +117,10 @@ def main():
     os.chdir("../../")
 
     file_name = "{}_backup.tar.gz".format(now)
+    try:
+        shutil.rmtree(backup_folder + "/" + static_folder.split("/")[-1])
+    except FileNotFoundError:
+        pass
     shutil.copytree(static_folder, backup_folder + "/" + static_folder.split("/")[-1])
     with tarfile.open(file_name, "w:gz") as tar:
         tar.add(backup_folder, arcname="")
